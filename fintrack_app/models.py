@@ -50,7 +50,7 @@ class Transaction(TimeStampModel):
     PAYMENT_SOURCE = (
         ("cash", "Cash"),
         ("card", "Card"),
-        ("wallet", "Wallet"),
+        ("ewallet", "EWallet"),
     )
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
