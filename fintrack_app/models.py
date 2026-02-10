@@ -65,7 +65,7 @@ class Transaction(TimeStampModel):
         ordering = ["-date"]
 
     def __str__(self):
-        return f"{self.get_transaction_type_display()} : {self.amount}"
+        return f"{self.category} : {self.amount}"
 
 class Budget(TimeStampModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

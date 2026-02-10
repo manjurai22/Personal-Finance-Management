@@ -1,0 +1,75 @@
+body {
+    background: #f3f5ff;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* Sidebar */
+.sidebar {
+    height: 100vh;
+    background: linear-gradient(180deg, #1e1f4b, #12132e);
+    color: white;
+    padding: 25px;
+}
+
+.brand {
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.sidebar .nav-link {
+    color: #c7c9ff;
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active {
+    background: #5f5cff;
+    color: white;
+}
+
+/* Main */
+.main-content {
+    padding: 30px;
+}
+
+/* Header */
+.user-header {
+    margin-bottom: 20px;
+}
+
+/* Stat cards */
+.stat-card {
+    border-radius: 18px;
+    padding: 20px;
+    margin-bottom: 15px;
+    color: white;
+}
+
+.stat-card.balance {
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+}
+
+.stat-card.income {
+    background: linear-gradient(135deg, #43e97b, #38f9d7);
+}
+
+.stat-card.expense {
+    background: linear-gradient(135deg, #fa709a, #fee140);
+}
+
+/* Cards */
+.card {
+    border-radius: 18px;
+    border: none;
+    padding: 20px;
+}
+
+.chart-box {
+    height: 100%;
+}
+
+.table-card table th {
+    font-weight: 600;
+}

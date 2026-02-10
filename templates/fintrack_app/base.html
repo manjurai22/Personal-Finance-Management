@@ -1,0 +1,48 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Finance App{% endblock %}</title>
+
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+</head>
+
+<body>
+
+<div class="container-fluid">
+    <div class="row">
+
+        <!-- SIDEBAR -->
+        <aside class="col-md-2 sidebar">
+            <div class="brand">FinTrack</div>
+
+            <ul class="nav flex-column mt-4">
+                <li><a class="nav-link active" href="#">Dashboard</a></li>
+                <li><a class="nav-link" href="#">Profile</a></li>
+                <li><a class="nav-link" href="#">Transactions</a></li>
+                <li><a class="nav-link" href="#">Budget</a></li>
+                <li><a class="nav-link" href="#">Debt</a></li>
+                <li><a class="nav-link" href="#">Goals</a></li>
+                <li><a class="nav-link" href="#">Reports</a></li>
+            </ul>
+        </aside>
+
+        <!-- MAIN -->
+        <main class="col-md-10 main-content">
+            {% block content %}
+            {% endblock %}
+        </main>
+
+    </div>
+</div>
+
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'js/charts.js' %}"></script>
+
+
+</body>
+</html>
