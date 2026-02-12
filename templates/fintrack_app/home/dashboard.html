@@ -1,0 +1,210 @@
+{% extends "fintrack_app/base.html" %}
+{% load static %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<!-- ================= STAT CARDS ================= -->
+<div class="row g-4 mb-4">
+
+    <div class="col-md-4">
+        <div class="stat-card balance-card">
+            <p>Total Balance</p>
+            <h3>Rs. {{ balance|floatformat:0 }}</h3>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="stat-card income-card">
+            <p>Total Income</p>
+            <h3>Rs. {{ income|floatformat:0 }}</h3>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="stat-card expense-card">
+            <p>Total Expense</p>
+            <h3>Rs. {{ expense|floatformat:0 }}</h3>
+        </div>
+    </div>
+
+</div>
+
+<!-- ================= SUMMARY STRIP ================= --> 
+<div class="summary-strip mb-4"> 
+    <div> <i class="bi bi-piggy-bank me-2"></i> You saved Rs. {{ saved|floatformat:0 }} </div>
+    <div> <i class="bi bi-cash-stack me-2"></i> Budget Left Rs. {{ budget_left|floatformat:0 }} </div> 
+    <div> <i class="bi bi-receipt me-2"></i>{{ today_count }} Today</div>
+</div>
+
+<!-- ================= CHART ROW ================= -->
+<div class="row g-4 mb-4">
+
+    <!-- Budget Gauge -->
+    <div class="col-lg-6">
+        <div class="card p-4 text-center">
+            <h5 class="mb-3">Monthly Budget Usage</h5>
+
+            {% if budget > 0 %}
+                <div style="height: 280px; max-width: 280px; margin: 0 auto;">
+                    <canvas id="budgetGauge"
+                        data-budget="{{ budget }}"
+                        data-expense="{{ monthly_expense }}">
+                    </canvas>
+                </div>
+            {% else %}
+                <p class="text-muted">No budget set for this month.</p>
+            {% endif %}
+        </div>
+    </div>
+
+
+    <!-- Income vs Expense -->
+    <div class="col-lg-6">
+        <div class="card p-4">
+            <h5 class="mb-3">Income vs Expense</h5>
+            <div class="chart-container">
+                <canvas id="incomeExpenseChart"
+                    data-income="{{ income }}"
+                    data-expense="{{ expense }}">
+                </canvas>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- ================= CATEGORY + TRANSACTIONS ================= -->
+<div class="row g-4 mb-4">
+
+    <!-- Expense by Category -->
+    <div class="col-lg-4">
+        <div class="card p-4">
+            <h5 class="mb-3">Expense by Category</h5>
+
+            <div class="chart-container">
+                {% if category_labels %}
+                    <canvas id="categoryPieChart"
+                            data-labels='{{ category_labels }}'
+                            data-values='{{ category_totals }}'>
+                    </canvas>
+                {% else %}
+                    <p class="text-muted">No expense data available.</p>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- Recent Transactions -->
+    <div class="col-lg-8">
+        <div class="card p-4">
+            <h5 class="mb-3">Recent Transactions</h5>
+
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Category</th>
+                            <th class="text-end">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for t in transactions %}
+                        <tr>
+                            <td>{{ t.date }}</td>
+                            <td>{{ t.category.name }}</td>
+                            <td class="text-end fw-semibold 
+                                {% if t.transaction_type == 'income' %}
+                                    text-success
+                                {% else %}
+                                    text-danger
+                                {% endif %}
+                            ">
+                                Rs. {{ t.amount|floatformat:0 }}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3" class="text-center text-muted">
+                                No transactions yet.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<!-- ================= GOALS ================= -->
+<div class="card p-4 mb-4">
+    <h5 class="mb-3">Goals Progress</h5>
+
+    {% for goal in goals %}
+    <div class="mb-3">
+        <div class="d-flex justify-content-between">
+            <strong>{{ goal.title }}</strong>
+            <small>{{ goal.progress_percentage|floatformat:0 }}%</small>
+        </div>
+        <div class="progress mt-2">
+            <div class="progress-bar bg-success"
+                style="width: {{ goal.progress_percentage }}%">
+            </div>
+        </div>
+    </div>
+    {% empty %}
+        <p class="text-muted">No goals yet.</p>
+    {% endfor %}
+</div>
+
+<!-- ================= DEBT + QUICK ACTIONS ================= -->
+<div class="row g-4 mb-4">
+
+    <!-- Debt Chart -->
+    <div class="col-lg-8">
+        <div class="card p-4 h-100">
+            <h5 class="mb-3">My Debts</h5>
+
+            {% if debt_labels != "[]" %}
+            <div style="height: 300px;">
+                <canvas id="debtChart"
+                        data-labels='{{ debt_labels }}'
+                        data-values='{{ debt_totals }}'>
+                </canvas>
+            </div>
+            {% else %}
+                <p class="text-muted">No debts available.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="col-lg-4">
+        <div class="card p-4 h-100">
+            <h5 class="mb-3">Quick Actions</h5>
+
+            <div class="d-grid gap-3">
+                <a href="#" class="btn btn-success">+ Add Transaction</a>
+                <a href="#" class="btn btn-primary">+ Add Goal</a>
+                <a href="#" class="btn btn-danger">+ Add Debt</a>
+                <a href="#" class="btn btn-warning">+ Set Budget</a>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{% static 'js/dashboard-charts.js' %}"></script>
+{% endblock %}
+

@@ -24,4 +24,15 @@ urlpatterns = [
     path('goals/add/', views.GoalCreateView.as_view(), name='goal-add'),
     path('goals/<int:pk>/edit/', views.GoalUpdateView.as_view(), name='goal-edit'),
     path('goals/<int:pk>/delete/', views.GoalDeleteView.as_view(), name='goal-delete'),
+
+    path("debts/", views.DebtListView.as_view(), name="debt-list"),
+    path("debts/add/", views.DebtCreateView.as_view(), name="debt-add"),
+    path("debts/<int:pk>/edit/", views.DebtUpdateView.as_view(), name="debt-edit"),
+    path("debts/<int:pk>/delete/", views.DebtDeleteView.as_view(), name="debt-delete"),
+
+    path("reports/", views.ReportListView.as_view(), name="report-list"),
+    path("reports/add/", views.ReportCreateView.as_view(), name="report-add"),
+    path("reports/<int:pk>/edit/", views.ReportUpdateView.as_view(), name="report-edit"),
+    path("reports/<int:pk>/delete/", views.ReportDeleteView.as_view(), name="report-delete"),
 ]
+

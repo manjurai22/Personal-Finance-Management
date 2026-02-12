@@ -4,45 +4,83 @@
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}Finance App{% endblock %}</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
-
-    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
 </head>
 
 <body>
 
-<div class="container-fluid">
-    <div class="row">
+<div class="app-layout">
 
-        <!-- SIDEBAR -->
-        <aside class="col-md-2 sidebar">
-            <div class="brand">FinTrack</div>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+    <h4 class="logo">
+        <i class="bi bi-wallet2 me-2"></i>FinanceApp
+    </h4>
 
-            <ul class="nav flex-column mt-4">
-                <li><a class="nav-link active" href="#">Dashboard</a></li>
-                <li><a class="nav-link" href="#">Profile</a></li>
-                <li><a class="nav-link" href="#">Transactions</a></li>
-                <li><a class="nav-link" href="#">Budget</a></li>
-                <li><a class="nav-link" href="#">Debt</a></li>
-                <li><a class="nav-link" href="#">Goals</a></li>
-                <li><a class="nav-link" href="#">Reports</a></li>
-            </ul>
-        </aside>
+    <ul class="nav flex-column mt-4">
 
-        <!-- MAIN -->
-        <main class="col-md-10 main-content">
-            {% block content %}
-            {% endblock %}
-        </main>
+        <li>
+            <a href="{% url 'dashboard' %}" class="nav-link">
+                <i class="bi bi-speedometer2 me-2"></i> Dashboard
+            </a>
+        </li>
 
-    </div>
+        <li>
+            <a href="#" class="nav-link">
+                <i class="bi bi-arrow-left-right me-2"></i> Transactions
+            </a>
+        </li>
+
+        <li>
+            <a href="#" class="nav-link">
+                <i class="bi bi-pie-chart me-2"></i> Budgets
+            </a>
+        </li>
+
+        <li>
+            <a href="#" class="nav-link">
+                <i class="bi bi-credit-card-2-front me-2"></i> Debts
+            </a>
+        </li>
+
+        <li>
+            <a href="#" class="nav-link">
+                <i class="bi bi-bullseye me-2"></i> Goals
+            </a>
+        </li>
+
+        <li>
+            <a href="#" class="nav-link">
+                <i class="bi bi-bar-chart-line me-2"></i> Reports
+            </a>
+        </li>
+
+    </ul>
+</aside>
+
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+        <!-- Top Bar -->
+        <div class="topbar">
+            <div>
+                <h5 class="mb-0">Hello, {{ request.user.username }} 👋</h5>
+            </div>
+        </div>
+
+        <div class="content-wrapper">
+            {% block content %}{% endblock %}
+        </div>
+
+    </main>
+
 </div>
 
 <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
-<script src="{% static 'js/charts.js' %}"></script>
-
-
+{% block extra_js %}{% endblock %}
 </body>
 </html>

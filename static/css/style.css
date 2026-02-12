@@ -1,75 +1,254 @@
+/* ================= GLOBAL ================= */
+
 body {
-    background: #f3f5ff;
-    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #f4f6fb;
+    font-family: 'Inter', sans-serif;
+    color: #333;
 }
 
-/* Sidebar */
+a {
+    text-decoration: none;
+}
+
+h5 {
+    font-weight: 600;
+}
+
+
+/* ================= LAYOUT ================= */
+
+.app-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+
+/* ================= SIDEBAR ================= */
+
 .sidebar {
-    height: 100vh;
-    background: linear-gradient(180deg, #1e1f4b, #12132e);
-    color: white;
-    padding: 25px;
-}
-
-.brand {
-    font-size: 22px;
-    font-weight: 700;
-}
-
-.sidebar .nav-link {
-    color: #c7c9ff;
-    margin: 10px 0;
-    padding: 10px;
-    border-radius: 10px;
-}
-
-.sidebar .nav-link:hover,
-.sidebar .nav-link.active {
-    background: #5f5cff;
-    color: white;
-}
-
-/* Main */
-.main-content {
-    padding: 30px;
-}
-
-/* Header */
-.user-header {
-    margin-bottom: 20px;
-}
-
-/* Stat cards */
-.stat-card {
-    border-radius: 18px;
-    padding: 20px;
-    margin-bottom: 15px;
-    color: white;
-}
-
-.stat-card.balance {
-    background: linear-gradient(135deg, #4facfe, #00f2fe);
-}
-
-.stat-card.income {
-    background: linear-gradient(135deg, #43e97b, #38f9d7);
-}
-
-.stat-card.expense {
-    background: linear-gradient(135deg, #fa709a, #fee140);
-}
-
-/* Cards */
-.card {
-    border-radius: 18px;
-    border: none;
-    padding: 20px;
-}
-
-.chart-box {
+    width: 250px;
+    background: #ffffff;
+    padding: 30px 20px;
+    box-shadow: 5px 0 25px rgba(0,0,0,0.04);
+    position: fixed;
     height: 100%;
 }
 
-.table-card table th {
+.logo {
+    font-weight: 700;
+    font-size: 20px;
+    color: #4e73df;
+}
+
+.sidebar .nav-link {
+    color: #555;
+    padding: 12px 10px;
+    border-radius: 12px;
+    font-weight: 500;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.sidebar .nav-link:hover {
+    background: #f1f3ff;
+    color: #4e73df;
+}
+
+.sidebar .nav-link.active {
+    background: #4e73df;
+    color: white;
+}
+
+
+/* ================= MAIN CONTENT ================= */
+
+.main-content {
+    margin-left: 250px;
+    flex: 1;
+    padding: 30px 40px;
+}
+
+
+/* ================= TOPBAR ================= */
+
+.topbar {
+    background: white;
+    padding: 18px 25px;
+    border-radius: 18px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+    margin-bottom: 30px;
+}
+
+
+/* ================= STAT CARDS ================= */
+
+.stat-card {
+    padding: 28px;
+    border-radius: 20px;
+    color: white;
+    transition: box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+    box-shadow: 0 12px 35px rgba(0,0,0,0.08);
+}
+
+.stat-card p {
+    margin-bottom: 8px;
+    opacity: 0.9;
+}
+
+.stat-card h3 {
+    font-weight: 700;
+    margin: 0;
+}
+
+/* Gradients */
+
+.balance-card {
+    background: linear-gradient(135deg,#36d1dc,#5b86e5);
+}
+
+.income-card {
+    background: linear-gradient(135deg,#00c9a7,#2af598);
+}
+
+.expense-card {
+    background: linear-gradient(135deg,#f7971e,#ffd200);
+}
+
+
+/* ================= SUMMARY STRIP ================= */
+
+.summary-strip {
+    background: #4e73df;
+    color: white;
+    padding: 15px 25px;
+    border-radius: 18px;
+    display: flex;
+    justify-content: space-between;
+    font-weight: 500;
+    box-shadow: 0 8px 20px rgba(78,115,223,0.3);
+}
+
+
+/* ================= CARDS ================= */
+
+.card {
+    border: none !important;
+    border-radius: 20px !important;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.05);
+    transition: box-shadow 0.2s ease;
+}
+
+.card:hover {
+    box-shadow: 0 12px 35px rgba(0,0,0,0.08);
+}
+
+.chart-container {
+    position: relative;
+    height: 280px;
+    width: 100%;
+}
+
+/* ================= TABLE ================= */
+
+.table {
+    margin-bottom: 0;
+}
+
+.table thead th {
     font-weight: 600;
+    color: #6c757d;
+    border-bottom: 1px solid #eaeaea;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+.table tbody tr:hover {
+    background: #f8f9ff;
+}
+
+
+/* ================= BUTTONS ================= */
+
+.btn {
+    border-radius: 12px;
+    font-weight: 500;
+    padding: 8px 16px;
+    transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-success {
+    background: #1cc88a;
+    border: none;
+}
+
+.btn-success:hover {
+    background: #17a673;
+}
+
+.btn-danger {
+    background: #e74a3b;
+    border: none;
+}
+
+.btn-danger:hover {
+    background: #c0392b;
+}
+
+.btn-primary {
+    background: #4e73df;
+    border: none;
+}
+
+.btn-primary:hover {
+    background: #2e59d9;
+}
+
+
+/* ================= PROGRESS BAR ================= */
+
+.progress {
+    height: 8px;
+    border-radius: 10px;
+    background: #e9ecef;
+}
+
+.progress-bar {
+    border-radius: 10px;
+}
+
+
+/* ================= CHART CONTAINERS ================= */
+
+/* Let Chart.js control canvas size properly */
+.chart-container {
+    position: relative;
+    height: 280px;
+}
+
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 992px) {
+
+    .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+    }
+
+    .main-content {
+        margin-left: 0;
+    }
+
+    .summary-strip {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
 }
