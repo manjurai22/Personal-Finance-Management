@@ -3,16 +3,20 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.db.models import Sum
+from django.contrib.auth.decorators import login_required
 from .models import UserProfile, Category, Transaction, Budget, Debt, Goal
-from datetime import date
+from datetime import datetime, timedelta, date
 import json
 # Create your views here.
+@login_required
 def dashboard(request):
     user = request.user
-    profile = get_object_or_404(UserProfile, user=user)
-
+    profile, created = UserProfile.objects.get_or_create(
+        user=user,
+        defaults={"full_name": user.username}
+        )
+    
     today = date.today()
-
     # All user transactions
     transactions = Transaction.objects.filter(user=user)
 
@@ -28,22 +32,27 @@ def dashboard(request):
     saved = income - expense
 
     # ===== Today's Transaction Count =====
-    today_count = transactions.filter(
-        date=today
-    ).count()
+    start = datetime(today.year, today.month, today.day)
+    end = start + timedelta(days=1)
+
+    today_count = transactions.filter(date__gte=start, date__lt=end).count()
 
     # ===== Monthly Expense =====
+    month_start = datetime(today.year, today.month, 1)
+    next_month = (month_start + timedelta(days=32)).replace(day=1)
+
     monthly_expense = transactions.filter(
         transaction_type="expense",
-        date__year=today.year,
-        date__month=today.month
+        date__gte=month_start,
+        date__lt=next_month
     ).aggregate(total=Sum("amount"))["total"] or 0
+
 
     # ===== Monthly Budget =====
     budget = Budget.objects.filter(
         user=user,
         month__year=today.year,
-        month__month=today.month,
+        month__month=today.month
     ).aggregate(total=Sum("monthly_limit"))["total"] or 0
 
     budget_left = budget - monthly_expense
@@ -54,12 +63,6 @@ def dashboard(request):
     ).values("category__name").annotate(
         total=Sum("amount")
     )
-
-    # ===== Recent Transactions =====
-    recent_transactions = transactions.select_related(
-        "category"
-    ).order_by("-date")[:8]
-
     category_labels = json.dumps(
         [c["category__name"] for c in category_expenses]
     )
@@ -68,6 +71,26 @@ def dashboard(request):
        [float(c["total"]) for c in category_expenses]
      )
     
+    # ===== Income & Expense by Category (for grouped bar chart) =====
+    income_categories = transactions.filter(transaction_type="income") \
+                                    .values("category__name") \
+                                    .annotate(total=Sum("amount"))
+    expense_categories = transactions.filter(transaction_type="expense") \
+                                     .values("category__name") \
+                                     .annotate(total=Sum("amount"))
+
+    income_cat_labels = json.dumps([c["category__name"] for c in income_categories])
+    income_cat_totals = json.dumps([float(c["total"]) for c in income_categories])
+    expense_cat_labels = json.dumps([c["category__name"] for c in expense_categories])
+    expense_cat_totals = json.dumps([float(c["total"]) for c in expense_categories])
+    
+
+
+    # ===== Recent Transactions =====
+    recent_transactions = transactions.select_related(
+        "category"
+    ).order_by("-date")[:8]
+
     # Goals
     goals = Goal.objects.filter(user=user).order_by("-created_at")[:4]
 
@@ -80,14 +103,28 @@ def dashboard(request):
 
     # ===== Debt Chart Data =====
     debts = Debt.objects.filter(user=user)
-
     debt_labels = json.dumps([d.title for d in debts])
     debt_totals = json.dumps([float(d.remaining_amount) for d in debts])
 
+    # ===== Calculate REAL total balance =====
+    # Start with UserProfile balance
+    base_balance = profile.balance or 0
+
+    # Total borrowed debts (money you owe)
+    borrowed_debts = Debt.objects.filter(user=user, debt_type="borrowed").aggregate(total=Sum("remaining_amount"))["total"] or 0
+
+    # Total lent debts (money others owe you)
+    lent_debts = Debt.objects.filter(user=user, debt_type="lent").aggregate(total=Sum("remaining_amount"))["total"] or 0
+
+    # Total money allocated to goals (optional, to subtract if you consider them "reserved")
+    allocated_goals = Goal.objects.filter(user=user).aggregate(total=Sum("current_amount"))["total"] or 0
+
+    # Real total balance
+    total_balance = base_balance - expense - borrowed_debts + lent_debts - allocated_goals
 
     context = {
         "profile": profile,
-        "balance": profile.total_balance(),
+        "balance": total_balance,
         "income": income,
         "expense": expense,
         "saved": saved,
@@ -102,6 +139,10 @@ def dashboard(request):
         "transactions": recent_transactions,
         "debt_labels": debt_labels,
         "debt_totals": debt_totals,
+        "income_cat_labels": income_cat_labels,
+        "income_cat_totals": income_cat_totals,
+        "expense_cat_labels": expense_cat_labels,
+        "expense_cat_totals": expense_cat_totals,
     }
 
     return render(request, "fintrack_app/dashboard.html", context)
@@ -151,7 +192,7 @@ class TransactionListView(UserBaseView, ListView):
 
 class TransactionCreateView(UserBaseView, CreateView):
     model = Transaction
-    fields = ['category', 'transaction_type', 'payment_source', 'amount', 'date', 'note']
+    fields = ['category', 'transaction_type', 'amount', 'note']
     template_name = 'fintrack_app/transaction/transaction_form.html'
     success_url = reverse_lazy('transaction-list')
 
@@ -160,7 +201,7 @@ class TransactionUpdateView(TransactionCreateView, UpdateView):
     template_name = 'fintrack_app/transaction/transaction_form.html'
 
 
-class TransactionDeleteView(UserBaseView, DeleteView):
+class TransactionDeleteView(LoginRequiredMixin, DeleteView):
     model = Transaction
     template_name = 'fintrack_app/transaction/transaction_delete.html'
     success_url = reverse_lazy('transaction-list')
@@ -175,7 +216,7 @@ class BudgetListView(UserBaseView, ListView):
 
 class BudgetCreateView(UserBaseView, CreateView):
     model = Budget
-    fields = ['monthly_limit', 'month', 'year']
+    fields = ['monthly_limit', 'month']
     template_name = 'fintrack_app/budget/budget_form.html'
     success_url = reverse_lazy('budget-list')
 
@@ -218,24 +259,12 @@ class GoalListView(UserBaseView, ListView):
     template_name = 'fintrack_app/goal/goal_list.html'
     context_object_name = 'goals'
 
-def allocate_goal_money(user_profile, amount, source):
-    if source == 'total':
-        if user_profile.total_balance < amount:
-            raise ValueError("Not enough total balance.")
-        user_profile.total_balance -= amount
+def allocate_goal_money(user_profile, amount, source=None):
+    if user_profile.balance < amount:
+        raise ValueError("Not enough balance.")
 
-    elif source == 'card':
-        if user_profile.card_balance < amount:
-            raise ValueError("Not enough card balance.")
-        user_profile.card_balance -= amount
-
-    elif source == 'e_wallet':
-        if user_profile.e_wallet < amount:
-            raise ValueError("Not enough e-wallet balance.")
-        user_profile.e_wallet -= amount
-
-    else:
-        raise ValueError("Invalid source selected.")
+    user_profile.balance -= amount
+    user_profile.save()
     
 class GoalCreateView(UserBaseView, CreateView):
     model = Goal

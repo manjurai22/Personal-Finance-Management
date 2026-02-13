@@ -59,14 +59,16 @@
     </div>
 
 
-    <!-- Income vs Expense -->
+    <!-- Grouped Income vs Expense by Category -->
     <div class="col-lg-6">
         <div class="card p-4">
-            <h5 class="mb-3">Income vs Expense</h5>
+            <h5 class="mb-3">Income vs Expense by Category</h5>
             <div class="chart-container">
                 <canvas id="incomeExpenseChart"
-                    data-income="{{ income }}"
-                    data-expense="{{ expense }}">
+                    data-income-labels='{{ income_cat_labels|safe }}'
+                    data-income-values='{{ income_cat_totals|safe }}'
+                    data-expense-labels='{{ expense_cat_labels|safe }}'
+                    data-expense-values='{{ expense_cat_totals|safe }}'>
                 </canvas>
             </div>
         </div>

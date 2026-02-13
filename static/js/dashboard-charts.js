@@ -27,36 +27,59 @@ Chart.register({
 // ===============================
 // 1️⃣ INCOME VS EXPENSE (BAR)
 // ===============================
+const canvas = document.getElementById("incomeExpenseChart");
 
-const incomeExpenseCanvas = document.getElementById("incomeExpenseChart");
+if (canvas) {
+    const incomeLabels = JSON.parse(canvas.dataset.incomeLabels || "[]");
+    const incomeValues = JSON.parse(canvas.dataset.incomeValues || "[]").map(v => Number(v) || 0);
 
-if (incomeExpenseCanvas) {
+    const expenseLabels = JSON.parse(canvas.dataset.expenseLabels || "[]");
+    const expenseValues = JSON.parse(canvas.dataset.expenseValues || "[]").map(v => Number(v) || 0);
 
-    const income = parseFloat(incomeExpenseCanvas.dataset.income) || 0;
-    const expense = parseFloat(incomeExpenseCanvas.dataset.expense) || 0;
+    const allLabels = Array.from(new Set([...incomeLabels, ...expenseLabels]));
 
-    new Chart(incomeExpenseCanvas, {
+    const incomeData = allLabels.map(label => {
+        const idx = incomeLabels.indexOf(label);
+        return idx !== -1 ? incomeValues[idx] : 0;
+    });
+
+    const expenseData = allLabels.map(label => {
+        const idx = expenseLabels.indexOf(label);
+        return idx !== -1 ? expenseValues[idx] : 0;
+    });
+
+    new Chart(canvas, {
         type: "bar",
         data: {
-            labels: ["Income", "Expense"],
-            datasets: [{
-                label: "Amount (Rs.)",
-                data: [income, expense],
-                backgroundColor: [
-                    "rgba(25, 135, 84, 0.7)",
-                    "rgba(220, 53, 69, 0.7)"
-                ],
-                borderRadius: 6
-            }]
+            labels: allLabels,
+            datasets: [
+                {
+                    label: "Income",
+                    data: incomeData,
+                    backgroundColor: "rgba(25, 135, 84, 0.7)",
+                    borderRadius: 6
+                },
+                {
+                    label: "Expense",
+                    data: expenseData,
+                    backgroundColor: "rgba(220, 53, 69, 0.7)",
+                    borderRadius: 6
+                }
+            ]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false }
-            },
+            plugins: { legend: { display: true } },
             scales: {
-                y: { beginAtZero: true }
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return "Rs. " + value.toLocaleString();
+                        }
+                    }
+                }
             }
         }
     });

@@ -13,14 +13,10 @@ class TimeStampModel(models.Model):
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     full_name = models.CharField(max_length=100)
-
-    cash_balance = models.DecimalField(max_digits=12, decimal_places=2, default=0)
-    card_balance = models.DecimalField(max_digits=12, decimal_places=2, default=0)
-    reserved_balance = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    balance = models.DecimalField(max_digits=12, decimal_places=2, default=0)
 
     def total_balance(self):
-        return self.cash_balance + self.card_balance + self.reserved_balance
-
+        return self.balance
     def __str__(self):
         return self.full_name
 
@@ -42,23 +38,18 @@ class Transaction(TimeStampModel):
         ("expense", "Expense"),
     )
 
-    PAYMENT_SOURCE = (
-        ("cash", "Cash"),
-        ("card", "Card"),
-    )
-
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
     transaction_type = models.CharField(max_length=10, choices=TRANSACTION_TYPE)
     amount = models.DecimalField(max_digits=12, decimal_places=2, validators=[MinValueValidator(0.01)])
-    date = models.DateField()
+    date = models.DateTimeField(auto_now_add=True)
     note = models.TextField(blank=True)
 
     class Meta:
         ordering = ["-date"]
 
     def __str__(self):
-        return f"{self.amount} ({self.get_transaction_type_display()}) — {self.category}"
+        return f"{self.amount} ({self.get_transaction_type_display()})"
 
 class Budget(TimeStampModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -69,9 +60,7 @@ class Budget(TimeStampModel):
         ordering = ["-month"]
     
     def __str__(self):
-        if self.month:
-            return f"{self.user.username} - {self.month.strftime('%B %Y')}"
-        return f"{self.user.username} - No Month"
+        return f"{self.user.username} - {self.month.strftime('%B %Y')}"
  
 class Debt(TimeStampModel):
     DEBT_TYPE = (
@@ -91,7 +80,7 @@ class Debt(TimeStampModel):
         ordering = ["-start_date"]
 
     def __str__(self):
-        return f"{self.title} : {self.remaining_amount} ({self.get_debt_type_display()})"
+        return f"{self.title} : {self.remaining_amount}"
 
 class Goal(TimeStampModel):
     GOAL_TYPE = (
@@ -113,9 +102,9 @@ class Goal(TimeStampModel):
     def clean(self):
         if self.current_amount > self.target_amount:
             raise ValidationError({
-                "current_amount": "Current amount cannot exceed target amount."
+                "Current amount cannot exceed target amount."
             })
 
     def __str__(self):
-        return f"{self.title} : {self.current_amount}/{self.target_amount} ({self.get_goal_type_display()})"
+        return f"{self.title} ({self.current_amount}/{self.target_amount})"
     

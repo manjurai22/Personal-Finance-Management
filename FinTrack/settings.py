@@ -117,3 +117,6 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = ['static']
+
+LOGIN_URL = 'login'          # the URL name of your login view
+LOGIN_REDIRECT_URL = 'dashboard'  # where to go after login
