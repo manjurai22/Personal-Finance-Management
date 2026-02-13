@@ -1,0 +1,69 @@
+{% extends "fintrack_app/base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="fw-bold">Categories</h3>
+        <a href="{% url 'category-add' %}" class="btn btn-primary">
+            + Add Category
+        </a>
+    </div>
+
+    <!-- Table -->
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            {% if categories %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Name</th>
+                            <th>Type</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for category in categories %}
+                        <tr>
+                            <td>{{ category.name }}</td>
+                            <td>
+                               <span class="badge 
+                                {% if category.category_type|upper == 'INCOME' %}
+                                    bg-success
+                                {% else %}
+                                    bg-danger
+                                {% endif %}">
+                                {{ category.category_type }}
+                            </span>
+
+                            </td>
+                            <td class="text-end">
+                                <a href="{% url 'category-edit' category.pk %}" 
+                                   class="btn btn-sm btn-outline-warning">
+                                    Edit
+                                </a>
+                                <a href="{% url 'category-delete' category.pk %}" 
+                                   class="btn btn-sm btn-outline-danger">
+                                    Delete
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+                <div class="text-center py-4">
+                    <p class="text-muted">No categories added yet.</p>
+                </div>
+            {% endif %}
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

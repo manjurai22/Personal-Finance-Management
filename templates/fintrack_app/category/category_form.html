@@ -1,0 +1,64 @@
+{% extends "fintrack_app/base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+
+            <div class="card shadow-sm">
+                <div class="card-body">
+
+                    <!-- Dynamic Title -->
+                    <h4 class="mb-4 fw-bold text-center">
+                        {% if object %}
+                            Edit Category
+                        {% else %}
+                            Add Category
+                        {% endif %}
+                    </h4>
+
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <!-- Name Field -->
+                        <div class="mb-3">
+                            <label class="form-label">Category Name</label>
+                            <input type="text" 
+                                   name="name" 
+                                   value="{{ form.name.value|default:'' }}" 
+                                   class="form-control" 
+                                   required>
+                        </div>
+
+                        <!-- Category Type -->
+                        <div class="mb-4">
+                            <label class="form-label">Category Type</label>
+                            {{ form.category_type }}
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'category-list' %}" 
+                               class="btn btn-outline-secondary">
+                                Cancel
+                            </a>
+                            <button type="submit" 
+                                    class="btn btn-primary">
+                                {% if object %}
+                                    Update
+                                {% else %}
+                                    Save
+                                {% endif %}
+                            </button>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

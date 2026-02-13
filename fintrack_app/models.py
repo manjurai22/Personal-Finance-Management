@@ -119,20 +119,3 @@ class Goal(TimeStampModel):
     def __str__(self):
         return f"{self.title} : {self.current_amount}/{self.target_amount} ({self.get_goal_type_display()})"
     
-class Report(TimeStampModel):
-    REPORT_TYPE = (
-        ("monthly_summary", "Monthly Summary"),
-        ("category_breakdown", "Category Breakdown"),
-        ("goal_progress", "Goal Progress"),
-    )
-
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    report_type = models.CharField(max_length=20, choices=REPORT_TYPE)
-    start_date = models.DateField()
-    end_date = models.DateField()
-
-    class Meta:
-        ordering = ["-created_at"]
-
-    def __str__(self):
-        return f"{self.get_report_type_display()} ({self.start_date} to {self.end_date})"

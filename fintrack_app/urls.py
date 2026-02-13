@@ -30,9 +30,5 @@ urlpatterns = [
     path("debts/<int:pk>/edit/", views.DebtUpdateView.as_view(), name="debt-edit"),
     path("debts/<int:pk>/delete/", views.DebtDeleteView.as_view(), name="debt-delete"),
 
-    path("reports/", views.ReportListView.as_view(), name="report-list"),
-    path("reports/add/", views.ReportCreateView.as_view(), name="report-add"),
-    path("reports/<int:pk>/edit/", views.ReportUpdateView.as_view(), name="report-edit"),
-    path("reports/<int:pk>/delete/", views.ReportDeleteView.as_view(), name="report-delete"),
 ]
 
