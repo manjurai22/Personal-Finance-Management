@@ -13,37 +13,31 @@
                 <form method="POST">
                     {% csrf_token %}
 
-                    <!-- Title -->
                     <div class="mb-3">
                         <label class="form-label">Title</label>
                         {{ form.title }}
                     </div>
 
-                    <!-- Debt Type -->
                     <div class="mb-3">
                         <label class="form-label">Type</label>
                         {{ form.debt_type }}
                     </div>
 
-                    <!-- Total Amount -->
                     <div class="mb-3">
                         <label class="form-label">Total Amount</label>
                         {{ form.total_amount }}
                     </div>
 
-                    <!-- Remaining Amount -->
                     <div class="mb-3">
                         <label class="form-label">Remaining Amount</label>
                         {{ form.remaining_amount }}
                     </div>
 
-                    <!-- Start Date -->
                     <div class="mb-3">
                         <label class="form-label">Start Date</label>
                         {{ form.start_date }}
                     </div>
 
-                    <!-- Due Date -->
                     <div class="mb-3">
                         <label class="form-label">Due Date (optional)</label>
                         {{ form.due_date }}

@@ -43,7 +43,7 @@ def dashboard(request):
     # All user transactions
     transactions = Transaction.objects.filter(user=user)
 
-    # ===== Income & Expense =====
+    #Income & Expense
     income = transactions.filter(
         transaction_type="income"
     ).aggregate(total=Sum("amount"))["total"] or 0
@@ -54,13 +54,13 @@ def dashboard(request):
 
     saved = income - expense
 
-    # ===== Today's Transaction Count =====
+    # Today's Transaction Count
     start = datetime(today.year, today.month, today.day)
     end = start + timedelta(days=1)
 
     today_count = transactions.filter(date__gte=start, date__lt=end).count()
 
-    # ===== Monthly Expense =====
+    # Monthly Expense
     month_start = datetime(today.year, today.month, 1)
     next_month = (month_start + timedelta(days=32)).replace(day=1)
 
@@ -71,7 +71,7 @@ def dashboard(request):
     ).aggregate(total=Sum("amount"))["total"] or 0
 
 
-    # ===== Monthly Budget =====
+    # Monthly Budget 
     budget = Budget.objects.filter(
         user=user,
         month__year=today.year,
@@ -80,7 +80,7 @@ def dashboard(request):
 
     budget_left = budget - monthly_expense
 
-    # ===== Category Expenses =====
+    #Category Expenses 
     category_expenses = transactions.filter(
         transaction_type="expense"
     ).values("category__name").annotate(
@@ -94,7 +94,7 @@ def dashboard(request):
        [float(c["total"]) for c in category_expenses]
      )
     
-    # ===== Income & Expense by Category (for grouped bar chart) =====
+    # Income & Expense by Category bar graph
     category_map = defaultdict(lambda: {"income": 0, "expense": 0})
 
     for t in transactions:
@@ -108,7 +108,7 @@ def dashboard(request):
     income_data = [round(category_map[label]["income"], 2) for label in all_labels]
     expense_data = [round(category_map[label]["expense"], 2) for label in all_labels]
 
-    # ===== Recent Transactions =====
+    #Recent Transactions
     recent_transactions = transactions.select_related(
         "category"
     ).order_by("-date")[:8]
@@ -123,7 +123,7 @@ def dashboard(request):
         else:
             goal.progress_percentage = 0
 
-    # ===== Debt Chart Data =====
+    #Debt Chart Data
     debts = Debt.objects.filter(user=request.user)
     debt_labels = []
     debt_totals = []
@@ -135,17 +135,17 @@ def dashboard(request):
         debt_types.append(debt.debt_type)
 
 
-    # ===== Calculate REAL total balance =====
-    # Start with UserProfile balance
+    # Calculate REAL total balance
+
     base_balance = profile.balance or 0
 
-    # Total borrowed debts (money you owe)
+    # Total borrowed debts
     borrowed_debts = Debt.objects.filter(user=user, debt_type="borrowed").aggregate(total=Sum("remaining_amount"))["total"] or 0
 
-    # Total lent debts (money others owe you)
+    # Total lent debts
     lent_debts = Debt.objects.filter(user=user, debt_type="lent").aggregate(total=Sum("remaining_amount"))["total"] or 0
 
-    # Total money allocated to goals (optional, to subtract if you consider them "reserved")
+    # Total money allocated to goals
     allocated_goals = Goal.objects.filter(user=user).aggregate(total=Sum("current_amount"))["total"] or 0
 
     # Real total balance

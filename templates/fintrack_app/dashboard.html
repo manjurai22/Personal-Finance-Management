@@ -4,7 +4,7 @@
 
 {% block content %}
 
-<!-- ================= STAT CARDS ================= -->
+<!-- STAT CARDS -->
 <div class="row g-4 mb-4">
 
     <div class="col-md-4">
@@ -30,14 +30,14 @@
 
 </div>
 
-<!-- ================= SUMMARY STRIP ================= --> 
+<!--  SUMMARY STRIP  --> 
 <div class="summary-strip mb-4"> 
     <div> <i class="bi bi-piggy-bank me-2"></i> You saved Rs. {{ saved|floatformat:0 }} </div>
     <div> <i class="bi bi-cash-stack me-2"></i> Budget Left Rs. {{ budget_left|floatformat:0 }} </div> 
     <div> <i class="bi bi-receipt me-2"></i>{{ today_count }} Today</div>
 </div>
 
-<!-- ================= CHART ROW ================= -->
+<!--  CHART ROW  -->
 <div class="row g-4 mb-4">
 
     <!-- Budget Gauge -->
@@ -79,7 +79,7 @@
 
 </div>
 
-<!-- ================= CATEGORY + TRANSACTIONS ================= -->
+<!--  CATEGORY + TRANSACTIONS -->
 <div class="row g-4 mb-4">
 
     <!-- Recent Transactions -->
@@ -159,7 +159,7 @@
 
 </div>
 
-<!-- ================= GOALS ================= -->
+<!--  GOALS -->
 <div class="card p-4 mb-4">
     <h5 class="mb-3">Goals Progress</h5>
 
@@ -180,7 +180,7 @@
     {% endfor %}
 </div>
 
-<!-- ================= DEBT + QUICK ACTIONS ================= -->
+<!--  DEBT + QUICK ACTIONS  -->
 <div class="row g-4 mb-4">
 
     <!-- Debt Chart -->

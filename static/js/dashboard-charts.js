@@ -1,6 +1,5 @@
-// ===============================
+
 // CENTER TEXT PLUGIN (Budget)
-// ===============================
 Chart.register({
     id: 'centerText',
     afterDraw(chart, args, options) {
@@ -25,9 +24,7 @@ Chart.register({
 });
 
 
-// ===============================
-// 1️⃣ INCOME VS EXPENSE (BAR)
-// ===============================
+// INCOME VS EXPENSE (BAR)
 document.addEventListener("DOMContentLoaded", function () {
 
     const canvas = document.getElementById("incomeExpenseChart");
@@ -38,7 +35,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const incomeData = JSON.parse(canvas.dataset.income || "[]").map(Number);
     const expenseData = JSON.parse(canvas.dataset.expense || "[]").map(Number);
 
-    // ✅ Split long labels into multiple lines
+    // Split long labels into multiple lines
     const formattedLabels = labels.map(label => {
         if (label.length > 15) {
             return label.split(" ");   // breaks into stacked words
@@ -127,10 +124,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 });
 
-
-// ===============================
-// 2️⃣ MONTHLY BUDGET (DOUGHNUT)
-// ===============================
+// MONTHLY BUDGET (DOUGHNUT)
 
 const budgetCanvas = document.getElementById("budgetGauge");
 
@@ -167,10 +161,7 @@ if (budgetCanvas) {
     });
 }
 
-
-// ===============================
-// 3️⃣ EXPENSE BY CATEGORY (PIE)
-// ===============================
+// EXPENSE BY CATEGORY (PIE)
 
 const categoryCanvas = document.getElementById("categoryPieChart");
 
@@ -210,7 +201,7 @@ if (categoryCanvas) {
     }
 }
 
-
+// Debt Chart
 const debtCanvas = document.getElementById("debtChart");
 
 if (debtCanvas) {

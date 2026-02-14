@@ -13,31 +13,26 @@
                 <form method="POST">
                     {% csrf_token %}
 
-                    <!-- Title -->
                     <div class="mb-3">
                         <label class="form-label">Title</label>
                         {{ form.title }}
                     </div>
 
-                    <!-- Goal Type -->
                     <div class="mb-3">
                         <label class="form-label">Type</label>
                         {{ form.goal_type }}
                     </div>
 
-                    <!-- Target Amount -->
                     <div class="mb-3">
                         <label class="form-label">Target Amount</label>
                         {{ form.target_amount }}
                     </div>
 
-                    <!-- Current Amount -->
                     <div class="mb-3">
                         <label class="form-label">Current Amount</label>
                         {{ form.current_amount }}
                     </div>
 
-                    <!-- Deadline -->
                     <div class="mb-3">
                         <label class="form-label">Deadline (optional)</label>
                         {{ form.deadline }}
