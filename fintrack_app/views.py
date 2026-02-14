@@ -5,7 +5,7 @@ from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.db.models import Sum
 from django.contrib.auth.decorators import login_required
-from .forms import BudgetForm
+from .forms import BudgetForm, DebtForm
 from .models import UserProfile, Category, Transaction, Budget, Debt, Goal
 from datetime import datetime, timedelta, date
 import json
@@ -249,9 +249,12 @@ class DebtCreateView(UserFormMixin, CreateView):
     success_url = reverse_lazy('debt-list')
 
 
-class DebtUpdateView(DebtCreateView, UpdateView):
+class DebtUpdateView(UserFormMixin, UpdateView):
+    model = Debt
+    form_class = DebtForm
     template_name = 'fintrack_app/debt/debt_form.html'
-
+    success_url = reverse_lazy('debt-list')
+    
 
 class DebtDeleteView(UserQuerysetMixin, DeleteView):
     model = Debt

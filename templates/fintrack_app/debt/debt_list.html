@@ -1,0 +1,49 @@
+{% extends "fintrack_app/base.html" %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="fw-bold">Debts</h3>
+        <a href="{% url 'debt-add' %}" class="btn btn-primary">+ Add Debt</a>
+    </div>
+
+    <table class="table table-striped align-middle">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Type</th>
+                <th>Total Amount</th>
+                <th>Remaining Amount</th>
+                <th>Start Date</th>
+                <th>Due Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for debt in debts %}
+            <tr>
+                <td>{{ debt.title }}</td>
+                <td>
+                    <span class="badge 
+                        {% if debt.debt_type == 'lent' %}bg-success{% else %}bg-danger{% endif %}">
+                        {{ debt.get_debt_type_display }}
+                    </span>
+                </td>
+                <td>{{ debt.total_amount }}</td>
+                <td>{{ debt.remaining_amount }}</td>
+                <td>{{ debt.start_date }}</td>
+                <td>{{ debt.due_date|default:"-" }}</td>
+                <td>
+                    <a href="{% url 'debt-edit' debt.pk %}" class="btn btn-sm btn-warning">Edit</a>
+                    <a href="{% url 'debt-delete' debt.pk %}" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" class="text-center">No debts found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
