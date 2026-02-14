@@ -1,0 +1,62 @@
+{% extends "fintrack_app/base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold">Monthly Budgets</h3>
+        <a href="{% url 'budget-add' %}" class="btn btn-primary">
+            + Add Budget
+        </a>
+    </div>
+
+    {% if budgets %}
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <table class="table align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Month</th>
+                        <th>Monthly Limit</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for budget in budgets %}
+                    <tr>
+                        <td>
+                            {{ budget.month|date:"F Y" }}
+                        </td>
+                        <td>
+                            Rs. {{ budget.monthly_limit }}
+                        </td>
+                        <td class="text-end">
+                            <a href="{% url 'budget-edit' budget.pk %}" 
+                               class="btn btn-sm btn-outline-secondary">
+                                Edit
+                            </a>
+                            <a href="{% url 'budget-delete' budget.pk %}" 
+                               class="btn btn-sm btn-outline-danger">
+                                Delete
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+
+        </div>
+    </div>
+    {% else %}
+        <div class="alert alert-info">
+            No budgets added yet.
+        </div>
+    {% endif %}
+
+</div>
+
+{% endblock %}

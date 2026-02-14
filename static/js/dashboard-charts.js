@@ -14,7 +14,8 @@ Chart.register({
         const y = meta.data[0].y;
 
         ctx.save();
-        ctx.font = "bold 18px sans-serif";
+        const fontSize = Math.min(chart.width, chart.height) / 8;
+        ctx.font = `bold ${fontSize}px sans-serif`;
         ctx.fillStyle = "#333";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
@@ -27,63 +28,104 @@ Chart.register({
 // ===============================
 // 1️⃣ INCOME VS EXPENSE (BAR)
 // ===============================
-const canvas = document.getElementById("incomeExpenseChart");
+document.addEventListener("DOMContentLoaded", function () {
 
-if (canvas) {
-    const incomeLabels = JSON.parse(canvas.dataset.incomeLabels || "[]");
-    const incomeValues = JSON.parse(canvas.dataset.incomeValues || "[]").map(v => Number(v) || 0);
+    const canvas = document.getElementById("incomeExpenseChart");
+    if (!canvas) return;
 
-    const expenseLabels = JSON.parse(canvas.dataset.expenseLabels || "[]");
-    const expenseValues = JSON.parse(canvas.dataset.expenseValues || "[]").map(v => Number(v) || 0);
+    // Get data from HTML
+    const labels = JSON.parse(canvas.dataset.labels || "[]");
+    const incomeData = JSON.parse(canvas.dataset.income || "[]").map(Number);
+    const expenseData = JSON.parse(canvas.dataset.expense || "[]").map(Number);
 
-    const allLabels = Array.from(new Set([...incomeLabels, ...expenseLabels]));
-
-    const incomeData = allLabels.map(label => {
-        const idx = incomeLabels.indexOf(label);
-        return idx !== -1 ? incomeValues[idx] : 0;
-    });
-
-    const expenseData = allLabels.map(label => {
-        const idx = expenseLabels.indexOf(label);
-        return idx !== -1 ? expenseValues[idx] : 0;
+    // ✅ Split long labels into multiple lines
+    const formattedLabels = labels.map(label => {
+        if (label.length > 15) {
+            return label.split(" ");   // breaks into stacked words
+        }
+        return label;
     });
 
     new Chart(canvas, {
         type: "bar",
         data: {
-            labels: allLabels,
+            labels: formattedLabels,
             datasets: [
                 {
                     label: "Income",
                     data: incomeData,
-                    backgroundColor: "rgba(25, 135, 84, 0.7)",
-                    borderRadius: 6
+                    backgroundColor: "rgba(25, 135, 84, 0.8)",
+                    borderRadius: 8,
+                    barPercentage: 0.8,
+                    categoryPercentage: 0.7
                 },
                 {
                     label: "Expense",
                     data: expenseData,
-                    backgroundColor: "rgba(220, 53, 69, 0.7)",
-                    borderRadius: 6
+                    backgroundColor: "rgba(220, 53, 69, 0.8)",
+                    borderRadius: 8,
+                    barPercentage: 0.8,
+                    categoryPercentage: 0.7
                 }
             ]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { display: true } },
+            animation: {
+                duration: 1000,
+                easing: "easeOutQuart"
+            },
+            plugins: {
+                legend: {
+                    position: "top",
+                    labels: {
+                        font: {
+                            size: 13,
+                            weight: "600"
+                        }
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.dataset.label + ": Rs. " +
+                                context.parsed.y.toLocaleString();
+                        }
+                    }
+                }
+            },
             scales: {
+                x: {
+                    ticks: {
+                        maxRotation: 30,
+                        minRotation: 0,
+                        autoSkip: false,
+                        font: {
+                            size: 12,
+                            weight: "500"
+                        }
+                    },
+                    grid: {
+                        display: false
+                    }
+                },
                 y: {
                     beginAtZero: true,
                     ticks: {
                         callback: function(value) {
                             return "Rs. " + value.toLocaleString();
+                        },
+                        font: {
+                            size: 12
                         }
                     }
                 }
             }
         }
     });
-}
+
+});
 
 
 // ===============================
@@ -189,6 +231,7 @@ if (debtCanvas) {
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             plugins: {
                 legend: { display: false }
             },

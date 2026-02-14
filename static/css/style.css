@@ -1,4 +1,7 @@
 /* ================= GLOBAL ================= */
+html {
+    font-size: 18px;
+}
 
 body {
     margin: 0;
@@ -6,13 +9,14 @@ body {
     background: #f4f6fb;
     font-family: 'Inter', sans-serif;
     color: #333;
+    font-size: 20px;
 }
 
 a {
     text-decoration: none;
 }
 
-h5 {
+h1,h2,h3,h4,h5 {
     font-weight: 600;
 }
 
@@ -28,45 +32,56 @@ h5 {
 /* ================= SIDEBAR ================= */
 
 .sidebar {
-    width: 250px;
+    width: 280px;
     background: #ffffff;
     padding: 30px 20px;
     box-shadow: 5px 0 25px rgba(0,0,0,0.04);
     position: fixed;
-    height: 100%;
+    border-right: 1px solid #eef1f6;
+    height: 100vh;
 }
 
-.logo {
+.sidebar .logo {
     font-weight: 700;
-    font-size: 20px;
+    font-size: 26px;
     color: #4e73df;
+    margin-bottom: 10px;
 }
 
 .sidebar .nav-link {
-    color: #555;
-    padding: 12px 10px;
+    display: flex;
+    align-items: center;
+    color: #555 !important;
+    padding: 16px 14px;
     border-radius: 12px;
-    font-weight: 500;
-    transition: background 0.2s ease, color 0.2s ease;
+    font-weight: 600 !important;
+    font-size: 18px;
+    transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.sidebar .nav-link i {
+    font-size: 20px;
 }
 
 .sidebar .nav-link:hover {
-    background: #f1f3ff;
-    color: #4e73df;
+    background: #f1f3ff !important;
+    color: #4e73df !important;
+    transform: translateX(4px); 
 }
 
 .sidebar .nav-link.active {
-    background: #4e73df;
-    color: white;
+    background: #4e73df !important;
+    color: white !important;
+    box-shadow: 0 4px 12px rgba(78,115,223,0.25);
 }
 
 
 /* ================= MAIN CONTENT ================= */
 
 .main-content {
-    margin-left: 250px;
-    flex: 1;
-    padding: 30px 40px;
+    margin-left: 280px;
+    width: 100%;
+    padding: 30px;
 }
 
 
@@ -78,6 +93,7 @@ h5 {
     border-radius: 18px;
     box-shadow: 0 8px 25px rgba(0,0,0,0.05);
     margin-bottom: 30px;
+    font-size: 4.4rem;
 }
 
 
@@ -97,11 +113,13 @@ h5 {
 .stat-card p {
     margin-bottom: 8px;
     opacity: 0.9;
+    font-size: 1rem;
 }
 
 .stat-card h3 {
     font-weight: 700;
     margin: 0;
+    font-size: 2rem;
 }
 
 /* Gradients */
@@ -137,6 +155,7 @@ h5 {
 
 .card {
     border: none !important;
+    padding:22px ;
     border-radius: 20px !important;
     box-shadow: 0 8px 30px rgba(0,0,0,0.05);
     transition: box-shadow 0.2s ease;
@@ -144,6 +163,11 @@ h5 {
 
 .card:hover {
     box-shadow: 0 12px 35px rgba(0,0,0,0.08);
+}
+
+.card h5 {
+    font-size: 18px;
+    font-weight: 600;
 }
 
 .chart-container {
@@ -178,7 +202,7 @@ h5 {
 .btn {
     border-radius: 12px;
     font-weight: 500;
-    padding: 8px 16px;
+    padding: 8px 18px;
     transition: background 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -225,14 +249,30 @@ h5 {
 
 /* ================= CHART CONTAINERS ================= */
 
-/* Let Chart.js control canvas size properly */
 .chart-container {
     position: relative;
-    height: 280px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+/* Donut chart size */
+.chart-donut {
+    height: 300px;
+    max-width: 420px;
+}
+
+/* Bar chart size */
+.chart-bar {
+    height: 300px;
+}
+
+.chart-pie {
+    height: 300px;
 }
 
 
-/* ================= RESPONSIVE ================= */
+
+/* ================= RESPONSIVE =================
 
 @media (max-width: 992px) {
 
@@ -251,4 +291,4 @@ h5 {
         gap: 10px;
         text-align: center;
     }
-}
+} */

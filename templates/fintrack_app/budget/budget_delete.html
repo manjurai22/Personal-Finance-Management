@@ -1,0 +1,14 @@
+{% extends 'fintrack_app/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h4>Delete Budget</h4>
+    <p>Are you sure you want to delete the budget for <strong>{{ object.month|date:"F Y" }}</strong>?</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Delete</button>
+        <a href="{% url 'budget-list' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

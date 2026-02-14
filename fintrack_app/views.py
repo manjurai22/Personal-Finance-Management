@@ -1,9 +1,11 @@
+from collections import defaultdict
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.db.models import Sum
 from django.contrib.auth.decorators import login_required
+from .forms import BudgetForm
 from .models import UserProfile, Category, Transaction, Budget, Debt, Goal
 from datetime import datetime, timedelta, date
 import json
@@ -72,18 +74,18 @@ def dashboard(request):
      )
     
     # ===== Income & Expense by Category (for grouped bar chart) =====
-    income_categories = transactions.filter(transaction_type="income") \
-                                    .values("category__name") \
-                                    .annotate(total=Sum("amount"))
-    expense_categories = transactions.filter(transaction_type="expense") \
-                                     .values("category__name") \
-                                     .annotate(total=Sum("amount"))
+    category_map = defaultdict(lambda: {"income": 0, "expense": 0})
 
-    income_cat_labels = json.dumps([c["category__name"] for c in income_categories])
-    income_cat_totals = json.dumps([float(c["total"]) for c in income_categories])
-    expense_cat_labels = json.dumps([c["category__name"] for c in expense_categories])
-    expense_cat_totals = json.dumps([float(c["total"]) for c in expense_categories])
-    
+    for t in transactions:
+        if t.category:
+            if t.transaction_type == "income":
+                category_map[t.category.name]["income"] += float(t.amount)
+            else:
+                category_map[t.category.name]["expense"] += float(t.amount)
+
+    all_labels = list(category_map.keys())
+    income_data = [round(category_map[label]["income"], 2) for label in all_labels]
+    expense_data = [round(category_map[label]["expense"], 2) for label in all_labels]
 
 
     # ===== Recent Transactions =====
@@ -139,33 +141,32 @@ def dashboard(request):
         "transactions": recent_transactions,
         "debt_labels": debt_labels,
         "debt_totals": debt_totals,
-        "income_cat_labels": income_cat_labels,
-        "income_cat_totals": income_cat_totals,
-        "expense_cat_labels": expense_cat_labels,
-        "expense_cat_totals": expense_cat_totals,
+        "income_cat_labels": json.dumps(all_labels),
+        "income_cat_totals": json.dumps(income_data),
+        "expense_cat_totals": json.dumps(expense_data),
     }
 
     return render(request, "fintrack_app/dashboard.html", context)
 
-
-class UserBaseView(LoginRequiredMixin):
-    fields = []           
-    success_url = None   
-
-    def form_valid(self, form):
-        form.instance.user = self.request.user
-        return super().form_valid(form)
-    
+# Mixin for ListView, DeleteView etc.
+class UserQuerysetMixin(LoginRequiredMixin):
     def get_queryset(self):
         return self.model.objects.filter(user=self.request.user)
 
-class CategoryListView(UserBaseView, ListView):
+
+# Mixin for CreateView / UpdateView
+class UserFormMixin(LoginRequiredMixin):
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+
+class CategoryListView(UserQuerysetMixin, ListView):
     model = Category
     template_name = 'fintrack_app/category/category_list.html'
     context_object_name = 'categories'
 
 
-class CategoryCreateView(UserBaseView, CreateView):
+class CategoryCreateView(UserFormMixin, CreateView):
     model = Category
     fields = ['name', 'category_type']
     template_name = 'fintrack_app/category/category_form.html'
@@ -176,7 +177,7 @@ class CategoryUpdateView(CategoryCreateView, UpdateView):
     template_name = 'fintrack_app/category/category_form.html'
 
 
-class CategoryDeleteView(UserBaseView, DeleteView):
+class CategoryDeleteView(UserQuerysetMixin, DeleteView):
     model = Category
     template_name = 'fintrack_app/category/category_delete.html'
     success_url = reverse_lazy('category-list')
@@ -184,13 +185,13 @@ class CategoryDeleteView(UserBaseView, DeleteView):
     def get_queryset(self):
         return Category.objects.filter(user=self.request.user)
 
-class TransactionListView(UserBaseView, ListView):
+class TransactionListView(UserQuerysetMixin, ListView):
     model = Transaction
     template_name = 'fintrack_app/transaction/transaction_list.html'
     context_object_name = 'transactions'
 
 
-class TransactionCreateView(UserBaseView, CreateView):
+class TransactionCreateView(UserFormMixin, CreateView):
     model = Transaction
     fields = ['category', 'transaction_type', 'amount', 'note']
     template_name = 'fintrack_app/transaction/transaction_form.html'
@@ -201,12 +202,12 @@ class TransactionUpdateView(TransactionCreateView, UpdateView):
     template_name = 'fintrack_app/transaction/transaction_form.html'
 
 
-class TransactionDeleteView(LoginRequiredMixin, DeleteView):
+class TransactionDeleteView(UserQuerysetMixin, DeleteView):
     model = Transaction
     template_name = 'fintrack_app/transaction/transaction_delete.html'
     success_url = reverse_lazy('transaction-list')
 
-class BudgetListView(UserBaseView, ListView):
+class BudgetListView(UserQuerysetMixin, ListView):
     model = Budget
     template_name = 'fintrack_app/budget/budget_list.html'
     context_object_name = 'budgets'
@@ -214,9 +215,9 @@ class BudgetListView(UserBaseView, ListView):
     def get_queryset(self):
         return Budget.objects.filter(user=self.request.user)
 
-class BudgetCreateView(UserBaseView, CreateView):
+class BudgetCreateView(UserFormMixin, CreateView):
     model = Budget
-    fields = ['monthly_limit', 'month']
+    form_class = BudgetForm
     template_name = 'fintrack_app/budget/budget_form.html'
     success_url = reverse_lazy('budget-list')
 
@@ -225,19 +226,22 @@ class BudgetCreateView(UserBaseView, CreateView):
         return super().form_valid(form)
 
 class BudgetUpdateView(BudgetCreateView, UpdateView):
+    model = Budget
+    form_class = BudgetForm
     template_name = 'fintrack_app/budget/budget_form.html'
+    success_url = reverse_lazy('budget-list')
 
-class BudgetDeleteView(UserBaseView, DeleteView):
+class BudgetDeleteView(UserQuerysetMixin, DeleteView):
     model = Budget
     template_name = 'fintrack_app/budget/budget_delete.html'
     success_url = reverse_lazy('budget-list')
 
-class DebtListView(UserBaseView, ListView):
+class DebtListView(UserQuerysetMixin, ListView):
     model = Debt
     template_name = 'fintrack_app/debt/debt_list.html'
     context_object_name = 'debts'
 
-class DebtCreateView(UserBaseView, CreateView):
+class DebtCreateView(UserFormMixin, CreateView):
     model = Debt
     fields = ['title', 'debt_type', 'total_amount', 'remaining_amount',
               'start_date', 'due_date', 'note']
@@ -249,12 +253,12 @@ class DebtUpdateView(DebtCreateView, UpdateView):
     template_name = 'fintrack_app/debt/debt_form.html'
 
 
-class DebtDeleteView(UserBaseView, DeleteView):
+class DebtDeleteView(UserQuerysetMixin, DeleteView):
     model = Debt
     template_name = 'fintrack_app/debt/debt_delete.html'
     success_url = reverse_lazy('debt-list')
 
-class GoalListView(UserBaseView, ListView):
+class GoalListView(UserQuerysetMixin, ListView):
     model = Goal
     template_name = 'fintrack_app/goal/goal_list.html'
     context_object_name = 'goals'
@@ -266,7 +270,7 @@ def allocate_goal_money(user_profile, amount, source=None):
     user_profile.balance -= amount
     user_profile.save()
     
-class GoalCreateView(UserBaseView, CreateView):
+class GoalCreateView(UserFormMixin, CreateView):
     model = Goal
     fields = ['title', 'goal_type', 'target_amount', 'current_amount', 'deadline']
     template_name = 'fintrack_app/goal/goal_form.html'
@@ -287,7 +291,7 @@ class GoalCreateView(UserBaseView, CreateView):
         form.instance.user = self.request.user
         return super().form_valid(form)
 
-class GoalUpdateView(UserBaseView, UpdateView):
+class GoalUpdateView(UserFormMixin, UpdateView):
     model = Goal
     fields = ['title', 'goal_type', 'target_amount', 'current_amount', 'deadline']
     template_name = 'fintrack_app/goal/goal_form.html'
@@ -312,7 +316,7 @@ class GoalUpdateView(UserBaseView, UpdateView):
         form.instance.user = self.request.user
         return super().form_valid(form)
 
-class GoalDeleteView(UserBaseView, DeleteView):
+class GoalDeleteView(UserQuerysetMixin, DeleteView):
     model = Goal
     template_name = 'fintrack_app/goal/goal_confirm_delete.html'
     success_url = reverse_lazy('goal-list')

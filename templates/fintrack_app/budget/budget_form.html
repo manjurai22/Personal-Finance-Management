@@ -1,0 +1,58 @@
+{% extends 'fintrack_app/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+
+            <!-- Form Card -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        {% if form.instance.pk %}
+                            Edit Budget
+                        {% else %}
+                            Add Budget
+                        {% endif %}
+                    </h5>
+                </div>
+
+                <div class="card-body">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        {{ form.non_field_errors }}
+
+                        <!-- Month Field -->
+                        <div class="mb-3">
+                            {{ form.month.label_tag }}
+                            {{ form.month }}
+                            {% for error in form.month.errors %}
+                                <div class="text-danger">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Monthly Limit Field -->
+                        <div class="mb-3">
+                            {{ form.monthly_limit.label_tag }}
+                            {{ form.monthly_limit }}
+                            {% for error in form.monthly_limit.errors %}
+                                <div class="text-danger">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn btn-success w-100">
+                            {% if form.instance.pk %}
+                                Update Budget
+                            {% else %}
+                                Add Budget
+                            {% endif %}
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

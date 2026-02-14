@@ -41,12 +41,12 @@
 <div class="row g-4 mb-4">
 
     <!-- Budget Gauge -->
-    <div class="col-lg-6">
-        <div class="card p-4 text-center">
+    <div class="col-lg-4">
+        <div class="card p-4 text-center h-100">
             <h5 class="mb-3">Monthly Budget Usage</h5>
 
             {% if budget > 0 %}
-                <div style="height: 280px; max-width: 280px; margin: 0 auto;">
+                <div class="chart-container chart-donut">
                     <canvas id="budgetGauge"
                         data-budget="{{ budget }}"
                         data-expense="{{ monthly_expense }}">
@@ -60,16 +60,19 @@
 
 
     <!-- Grouped Income vs Expense by Category -->
-    <div class="col-lg-6">
-        <div class="card p-4">
+    <div class="col-lg-8">
+        <div class="card p-4 h-100">
             <h5 class="mb-3">Income vs Expense by Category</h5>
             <div class="chart-container">
-                <canvas id="incomeExpenseChart"
-                    data-income-labels='{{ income_cat_labels|safe }}'
-                    data-income-values='{{ income_cat_totals|safe }}'
-                    data-expense-labels='{{ expense_cat_labels|safe }}'
-                    data-expense-values='{{ expense_cat_totals|safe }}'>
-                </canvas>
+                {% if income_cat_labels %}
+                    <canvas id="incomeExpenseChart"
+                        data-labels='{{ income_cat_labels|safe }}'
+                        data-income='{{ income_cat_totals|safe }}'
+                        data-expense='{{ expense_cat_totals|safe }}'>
+                    </canvas>
+                {% else %}
+                    <p class="text-muted">No data available.</p>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -78,6 +81,61 @@
 
 <!-- ================= CATEGORY + TRANSACTIONS ================= -->
 <div class="row g-4 mb-4">
+
+    <!-- Recent Transactions -->
+    <div class="col-lg-8">
+        <div class="card p-4">
+            <h5 class="mb-3">Recent Transactions</h5>
+
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Category</th>
+                            <th class="text-end">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% comment %} Show only first N transactions, e.g., 5 {% endcomment %}
+                        {% for t in transactions|slice:":5" %}
+                        <tr>
+                            <td>{{ t.date }}</td>
+                            <td>{{ t.category.name }}</td>
+                            <td class="text-end fw-semibold 
+                                {% if t.transaction_type == 'income' %}
+                                    text-success
+                                {% else %}
+                                    text-danger
+                                {% endif %} ">
+                                Rs. {{ t.amount|floatformat:0 }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        
+                        {% comment %} Pad empty rows to match chart height (optional) {% endcomment %}
+                        {% for i in "12345"|slice:":5"|length|add:"-transactions|length" %}
+                        <tr>
+                            <td>&nbsp;</td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        {% endfor %}
+
+                        {% if transactions|length == 0 %}
+                        
+                        <tr>
+                            <td colspan="3" class="text-center text-muted">
+                                No transactions yet.
+                            </td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
 
     <!-- Expense by Category -->
     <div class="col-lg-4">
@@ -98,49 +156,6 @@
         </div>
     </div>
 
-
-    <!-- Recent Transactions -->
-    <div class="col-lg-8">
-        <div class="card p-4">
-            <h5 class="mb-3">Recent Transactions</h5>
-
-            <div class="table-responsive">
-                <table class="table align-middle">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Category</th>
-                            <th class="text-end">Amount</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for t in transactions %}
-                        <tr>
-                            <td>{{ t.date }}</td>
-                            <td>{{ t.category.name }}</td>
-                            <td class="text-end fw-semibold 
-                                {% if t.transaction_type == 'income' %}
-                                    text-success
-                                {% else %}
-                                    text-danger
-                                {% endif %}
-                            ">
-                                Rs. {{ t.amount|floatformat:0 }}
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="3" class="text-center text-muted">
-                                No transactions yet.
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-
-        </div>
-    </div>
 
 </div>
 
