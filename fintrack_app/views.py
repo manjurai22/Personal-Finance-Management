@@ -1,15 +1,36 @@
 from collections import defaultdict
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.db.models import Sum
+from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from .forms import BudgetForm, DebtForm
+from django.contrib.auth.forms import AuthenticationForm
 from .models import UserProfile, Category, Transaction, Budget, Debt, Goal
 from datetime import datetime, timedelta, date
 import json
 # Create your views here.
+
+def login_view(request):
+    if request.user.is_authenticated:
+        return redirect('dashboard')
+
+    if request.method == "POST":
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            login(request, form.get_user())
+            return redirect('dashboard')
+    else:
+        form = AuthenticationForm()
+    return render(request, 'fintrack_app/login.html', {'form': form})
+
+@login_required
+def logout_view(request):
+    logout(request)
+    return render(request, 'fintrack_app/logout.html')
+
 @login_required
 def dashboard(request):
     user = request.user
@@ -87,7 +108,6 @@ def dashboard(request):
     income_data = [round(category_map[label]["income"], 2) for label in all_labels]
     expense_data = [round(category_map[label]["expense"], 2) for label in all_labels]
 
-
     # ===== Recent Transactions =====
     recent_transactions = transactions.select_related(
         "category"
@@ -129,7 +149,7 @@ def dashboard(request):
     allocated_goals = Goal.objects.filter(user=user).aggregate(total=Sum("current_amount"))["total"] or 0
 
     # Real total balance
-    total_balance = base_balance - expense - borrowed_debts + lent_debts - allocated_goals
+    total_balance = income- expense - borrowed_debts + lent_debts - allocated_goals
 
     context = {
         "profile": profile,

@@ -1,0 +1,10 @@
+{% extends "fintrack_app/base.html" %}
+{% block title %}Logged Out{% endblock %}
+
+{% block content %}
+<div class="container mt-5 text-center" style="max-width:500px;">
+    <h3 class="mb-4">You have been logged out</h3>
+    <p>Thank you for using Finance App.</p>
+    <a href="{% url 'login' %}" class="btn btn-primary mt-3">Login Again</a>
+</div>
+{% endblock %}

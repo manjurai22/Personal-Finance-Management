@@ -2,6 +2,9 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
 from django.core.exceptions import ValidationError
+from django.db.models.signals import post_save
+from django.db.models import Sum
+from django.dispatch import receiver
 
 class TimeStampModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
@@ -15,11 +18,9 @@ class UserProfile(models.Model):
     full_name = models.CharField(max_length=100)
     balance = models.DecimalField(max_digits=12, decimal_places=2, default=0)
 
-    def total_balance(self):
-        return self.balance
     def __str__(self):
         return self.full_name
-
+    
 class Category(TimeStampModel):
     CATEGORY_TYPE = (
         ("income", "Income"),

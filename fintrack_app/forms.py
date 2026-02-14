@@ -1,5 +1,5 @@
 from django import forms
-from .models import Budget, Debt
+from .models import Budget, Debt, UserProfile
 
 class BudgetForm(forms.ModelForm):
     class Meta:

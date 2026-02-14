@@ -3,11 +3,25 @@
 
 {% block content %}
 <div class="container mt-5" style="max-width:400px;">
-    <h3 class="mb-4">Login</h3>
+    <h3 class="mb-4 text-center">Login</h3>
+
+    {% if form.errors %}
+        <div class="alert alert-danger">
+            Please correct the errors below.
+        </div>
+    {% endif %}
+
     <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Login</button>
+        <div class="mb-3">
+            {{ form.username.label_tag }}
+            {{ form.username }}
+        </div>
+        <div class="mb-3">
+            {{ form.password.label_tag }}
+            {{ form.password }}
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Login</button>
     </form>
 </div>
 {% endblock %}
