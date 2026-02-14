@@ -217,15 +217,33 @@ if (debtCanvas) {
 
     const labels = JSON.parse(debtCanvas.dataset.labels || "[]");
     const values = JSON.parse(debtCanvas.dataset.values || "[]");
+    const types  = JSON.parse(debtCanvas.dataset.types || "[]");
 
+    const colors = [];
+    for (let i = 0; i < values.length; i++) {
+
+        const type = (types[i] || "").toLowerCase();
+
+        if (type === "borrowed") {
+            values[i] = -Math.abs(values[i]); 
+            colors.push("rgba(220, 53, 69, 0.7)"); 
+        } 
+        else if (type === "lent") {
+            colors.push("rgba(25, 135, 84, 0.7)"); 
+        } 
+        else {
+            colors.push("rgba(108, 117, 125, 0.7)"); 
+        }
+    }
+ 
     new Chart(debtCanvas, {
         type: "bar",
         data: {
-            labels: labels,
+            labels,
             datasets: [{
                 label: "Remaining (Rs.)",
                 data: values,
-                backgroundColor: "rgba(220, 53, 69, 0.7)",
+                backgroundColor: colors,
                 borderRadius: 6
             }]
         },
@@ -238,13 +256,9 @@ if (debtCanvas) {
             scales: {
                 y: {
                     beginAtZero: true,
-                    min: 0,
-                    max: Math.max(...values) * 1.2, // adds 20% space on top
-                    ticks: {
-                        stepSize: Math.ceil(Math.max(...values) / 5)
                     }
                 }
             }
         }
-    });
+    );
 }

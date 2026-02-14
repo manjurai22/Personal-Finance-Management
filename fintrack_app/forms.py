@@ -12,16 +12,22 @@ class BudgetForm(forms.ModelForm):
             'monthly_limit': forms.NumberInput(attrs={'class': 'form-control'}),
         }
 
-        
 class DebtForm(forms.ModelForm):
     class Meta:
         model = Debt
-        fields = ['title', 'debt_type', 'total_amount', 'remaining_amount', 'start_date', 'due_date']
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for field_name, field in self.fields.items():
-            if field_name == "debt_type":
-                field.widget.attrs.update({'class': 'form-select'})
-            else:
-                field.widget.attrs.update({'class': 'form-control'})
+        fields = [
+            'title',
+            'debt_type',
+            'total_amount',
+            'remaining_amount',
+            'start_date',
+            'due_date'
+        ]
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'debt_type': forms.Select(attrs={'class': 'form-select'}),
+            'total_amount': forms.NumberInput(attrs={'class': 'form-control'}),
+            'remaining_amount': forms.NumberInput(attrs={'class': 'form-control'}),
+            'start_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'due_date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+        }

@@ -1,0 +1,21 @@
+{% extends "fintrack_app/base.html" %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card p-4 shadow-sm text-center">
+                <h4 class="mb-3">Delete Goal</h4>
+                <p>Are you sure you want to delete the goal "<strong>{{ object.title }}</strong>"?</p>
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-center gap-2">
+                        <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                        <a href="{% url 'goal-list' %}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

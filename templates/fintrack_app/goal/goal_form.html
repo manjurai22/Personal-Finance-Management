@@ -7,7 +7,7 @@
         <div class="col-lg-6">
             <div class="card p-4 shadow-sm">
                 <h4 class="mb-4 text-center">
-                    {% if form.instance.pk %}Edit Debt{% else %}Add Debt{% endif %}
+                    {% if form.instance.pk %}Edit Goal{% else %}Add Goal{% endif %}
                 </h4>
 
                 <form method="POST">
@@ -19,39 +19,33 @@
                         {{ form.title }}
                     </div>
 
-                    <!-- Debt Type -->
+                    <!-- Goal Type -->
                     <div class="mb-3">
                         <label class="form-label">Type</label>
-                        {{ form.debt_type }}
+                        {{ form.goal_type }}
                     </div>
 
-                    <!-- Total Amount -->
+                    <!-- Target Amount -->
                     <div class="mb-3">
-                        <label class="form-label">Total Amount</label>
-                        {{ form.total_amount }}
+                        <label class="form-label">Target Amount</label>
+                        {{ form.target_amount }}
                     </div>
 
-                    <!-- Remaining Amount -->
+                    <!-- Current Amount -->
                     <div class="mb-3">
-                        <label class="form-label">Remaining Amount</label>
-                        {{ form.remaining_amount }}
+                        <label class="form-label">Current Amount</label>
+                        {{ form.current_amount }}
                     </div>
 
-                    <!-- Start Date -->
+                    <!-- Deadline -->
                     <div class="mb-3">
-                        <label class="form-label">Start Date</label>
-                        {{ form.start_date }}
+                        <label class="form-label">Deadline (optional)</label>
+                        {{ form.deadline }}
                     </div>
 
-                    <!-- Due Date -->
-                    <div class="mb-3">
-                        <label class="form-label">Due Date (optional)</label>
-                        {{ form.due_date }}
-                    </div>
-
-                    <div class="d-grid mt-3">
+                    <div class="d-grid">
                         <button type="submit" class="btn btn-primary">
-                            {% if form.instance.pk %}Update Debt{% else %}Add Debt{% endif %}
+                            {% if form.instance.pk %}Update Goal{% else %}Add Goal{% endif %}
                         </button>
                     </div>
 

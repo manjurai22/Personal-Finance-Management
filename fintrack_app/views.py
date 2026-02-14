@@ -104,9 +104,16 @@ def dashboard(request):
             goal.progress_percentage = 0
 
     # ===== Debt Chart Data =====
-    debts = Debt.objects.filter(user=user)
-    debt_labels = json.dumps([d.title for d in debts])
-    debt_totals = json.dumps([float(d.remaining_amount) for d in debts])
+    debts = Debt.objects.filter(user=request.user)
+    debt_labels = []
+    debt_totals = []
+    debt_types = []
+
+    for debt in debts:
+        debt_labels.append(debt.title)
+        debt_totals.append(float(debt.remaining_amount))
+        debt_types.append(debt.debt_type)
+
 
     # ===== Calculate REAL total balance =====
     # Start with UserProfile balance
@@ -139,8 +146,9 @@ def dashboard(request):
         "category_labels": category_labels,
         "category_totals": category_totals,
         "transactions": recent_transactions,
-        "debt_labels": debt_labels,
-        "debt_totals": debt_totals,
+        "debt_labels": json.dumps(debt_labels),
+        "debt_totals": json.dumps(debt_totals),
+        "debt_types": json.dumps(debt_types),
         "income_cat_labels": json.dumps(all_labels),
         "income_cat_totals": json.dumps(income_data),
         "expense_cat_totals": json.dumps(expense_data),
@@ -243,11 +251,9 @@ class DebtListView(UserQuerysetMixin, ListView):
 
 class DebtCreateView(UserFormMixin, CreateView):
     model = Debt
-    fields = ['title', 'debt_type', 'total_amount', 'remaining_amount',
-              'start_date', 'due_date', 'note']
+    form_class =DebtForm
     template_name = 'fintrack_app/debt/debt_form.html'
     success_url = reverse_lazy('debt-list')
-
 
 class DebtUpdateView(UserFormMixin, UpdateView):
     model = Debt
@@ -255,7 +261,6 @@ class DebtUpdateView(UserFormMixin, UpdateView):
     template_name = 'fintrack_app/debt/debt_form.html'
     success_url = reverse_lazy('debt-list')
     
-
 class DebtDeleteView(UserQuerysetMixin, DeleteView):
     model = Debt
     template_name = 'fintrack_app/debt/debt_delete.html'

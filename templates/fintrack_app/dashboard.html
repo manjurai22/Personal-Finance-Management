@@ -191,9 +191,19 @@
             {% if debt_labels != "[]" %}
             <div style="height: 300px;">
                 <canvas id="debtChart"
-                        data-labels='{{ debt_labels }}'
-                        data-values='{{ debt_totals }}'>
+                        data-labels='{{ debt_labels|safe}}'
+                        data-values='{{ debt_totals|safe }}'
+                        data-types='{{ debt_types|safe }}'>
                 </canvas>
+            </div>
+            <div class="mt-2 small">
+                <span style="color: rgba(25, 135, 84, 0.9); font-weight: 600;">
+                    ● Lent
+                </span>
+                &nbsp;&nbsp;
+                <span style="color: rgba(220, 53, 69, 0.9); font-weight: 600;">
+                    ● Borrowed
+                </span>
             </div>
             {% else %}
                 <p class="text-muted">No debts available.</p>
@@ -207,10 +217,10 @@
             <h5 class="mb-3">Quick Actions</h5>
 
             <div class="d-grid gap-3">
-                <a href="#" class="btn btn-success">+ Add Transaction</a>
-                <a href="#" class="btn btn-primary">+ Add Goal</a>
-                <a href="#" class="btn btn-danger">+ Add Debt</a>
-                <a href="#" class="btn btn-warning">+ Set Budget</a>
+                <a href="{% url 'transaction-add' %}" class="btn btn-success">+ Add Transaction</a>
+                <a href="{% url 'goal-add' %}" class="btn btn-primary">+ Add Goal</a>
+                <a href="{% url 'debt-add' %}" class="btn btn-danger">+ Add Debt</a>
+                <a href="{% url 'budget-add' %}" class="btn btn-warning">+ Set Budget</a>
             </div>
         </div>
     </div>
