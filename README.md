@@ -42,6 +42,7 @@ FinTrack is a **Django-based personal finance management web app** that helps us
 ---
 
 
-<img width="1884" height="927" alt="Screenshot (150)" src="https://github.com/user-attachments/assets/5671af2a-259f-4657-ba41-d2bfcc672b89" />
 <img width="1892" height="924" alt="Screenshot (149)" src="https://github.com/user-attachments/assets/354e8e73-c1ff-495a-8764-58270f397c9e" />
+
+<img width="1884" height="927" alt="Screenshot (150)" src="https://github.com/user-attachments/assets/5671af2a-259f-4657-ba41-d2bfcc672b89" />
 
